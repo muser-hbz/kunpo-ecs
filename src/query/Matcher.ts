@@ -111,7 +111,7 @@ export class Matcher {
      * @returns 是否匹配
      */
     public isMatch(mask: IMask): boolean {
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < this.rules.length; i++) {
             let rule = this.rules[i];
             if (rule && !rule.isMatch(mask)) {
                 return false;

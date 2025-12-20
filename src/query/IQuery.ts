@@ -12,7 +12,7 @@ import { EntityPool } from "../entity/EntityPool";
 
 export interface IQueryResult {
     // 筛选出来的实体集合
-    entitys: Set<Entity>;
+    entitys: Entity[];
 
     /** 通用迭代器实现，会产生极少的GC */
     iterate<T extends Component>(c1: ComponentType<T>): IterableIterator<[Entity, T]>;

@@ -20,16 +20,21 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
     componentPool: ComponentPool; // 组件池
     matcher: Matcher;
 
-    entitys: Set<Entity> = new Set();
     changeEntities: Set<Entity> = new Set();
     needFullRefresh: boolean = false;
+
+    /**
+     * 实体集合
+     * @internal
+     */
+    private _entitys: Set<Entity> = new Set();
 
     constructor(componentPool: ComponentPool, entityPool: EntityPool, matcher: Matcher) {
         this.componentPool = componentPool;
         this.entityPool = entityPool;
         this.matcher = matcher;
 
-        this.entitys.clear();
+        this._entitys.clear();
     }
 
     public changeEntity(entity: Entity): void {
@@ -62,10 +67,10 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
             let mask = this.entityPool.getMask(entity);
             if (mask && this.matcher.isMatch(mask)) {
                 // 添加
-                this.entitys.add(entity);
-            } else if (this.entitys.has(entity)) {
+                this._entitys.add(entity);
+            } else if (this._entitys.has(entity)) {
                 // 删除
-                this.entitys.delete(entity);
+                this._entitys.delete(entity);
             }
         }
     }
@@ -106,7 +111,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
         const matcher = this.matcher;
         let componentPool = this.componentPool;
         let lessType = this.checkAllOf();
-        this.entitys.clear();
+        this._entitys.clear();
 
         if (lessType === -1) {
             let anyTypes = matcher.ruleAnyOf.indices;
@@ -115,7 +120,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
                 let dense = componentPool.getPool(type);
                 dense.forEachEntity(entity => {
                     if (matcher.isMatch(this.entityPool.getMask(entity))) {
-                        this.entitys.add(entity)
+                        this._entitys.add(entity)
                     }
                 });
             }
@@ -126,19 +131,29 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
             // const size = dense.size;
             dense.forEachEntity((entity) => {
                 if (matcher.isMatch(this.entityPool.getMask(entity))) {
-                    this.entitys.add(entity)
+                    this._entitys.add(entity)
                 }
             });
         }
     }
 
     public clear(): void {
-        this.entitys.clear();
+        this._entitys.clear();
         this.changeEntities.clear();
     }
 
+    public get entitys(): Entity[] {
+        this.lazyRefresh();
+        return Array.from(this._entitys);
+    }
+
+    /**
+     * 获取实体集合
+     * @returns 实体集合
+     * @deprecated 请使用 entitys 代替
+     */
     public getEntitys(): Entity[] {
-        return Array.from(this.entitys);
+        return this.entitys;
     }
 
     private lazyRefresh(): void {
@@ -157,7 +172,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
         this.lazyRefresh();
         const pool = this.componentPool;
         temporaryList.length = 0;
-        for (let entity of this.entitys) {
+        for (let entity of this._entitys) {
             for (let i = 0; i < comps.length; i++) {
                 let component = pool.getComponent(entity, comps[i].ctype);
                 temporaryList.push(component);
@@ -171,7 +186,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
         this.lazyRefresh();
         const pool = this.componentPool;
         temporaryList.length = 0;
-        for (let entity of this.entitys) {
+        for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp.ctype) as T;
             yield [entity, c1];
         }
@@ -182,7 +197,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
         this.lazyRefresh();
         const pool = this.componentPool;
         temporaryList.length = 0;
-        for (let entity of this.entitys) {
+        for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp1.ctype) as T1;
             const c2 = pool.getComponent(entity, comp2.ctype) as T2;
             yield [entity, c1, c2];
@@ -194,7 +209,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
         this.lazyRefresh();
         const pool = this.componentPool;
         temporaryList.length = 0;
-        for (let entity of this.entitys) {
+        for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp1.ctype) as T1;
             const c2 = pool.getComponent(entity, comp2.ctype) as T2;
             const c3 = pool.getComponent(entity, comp3.ctype) as T3;
@@ -207,7 +222,7 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
         this.lazyRefresh();
         const pool = this.componentPool;
         temporaryList.length = 0;
-        for (let entity of this.entitys) {
+        for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp1.ctype) as T1;
             const c2 = pool.getComponent(entity, comp2.ctype) as T2;
             const c3 = pool.getComponent(entity, comp3.ctype) as T3;
