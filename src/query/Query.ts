@@ -171,8 +171,8 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
     public *iterate(...comps: ComponentType<Component>[]): IterableIterator<any> {
         this.lazyRefresh();
         const pool = this.componentPool;
-        temporaryList.length = 0;
         for (let entity of this._entitys) {
+            temporaryList.length = 0;
             for (let i = 0; i < comps.length; i++) {
                 let component = pool.getComponent(entity, comps[i].ctype);
                 temporaryList.push(component);
@@ -185,7 +185,6 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
     public *iterate1<T extends Component>(comp: ComponentType<T>): IterableIterator<[Entity, T]> {
         this.lazyRefresh();
         const pool = this.componentPool;
-        temporaryList.length = 0;
         for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp.ctype) as T;
             yield [entity, c1];
@@ -196,7 +195,6 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
     public *iterate2<T1 extends Component, T2 extends Component>(comp1: ComponentType<T1>, comp2: ComponentType<T2>): IterableIterator<[Entity, T1, T2]> {
         this.lazyRefresh();
         const pool = this.componentPool;
-        temporaryList.length = 0;
         for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp1.ctype) as T1;
             const c2 = pool.getComponent(entity, comp2.ctype) as T2;
@@ -208,7 +206,6 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
     public *iterate3<T1 extends Component, T2 extends Component, T3 extends Component>(comp1: ComponentType<T1>, comp2: ComponentType<T2>, comp3: ComponentType<T3>): IterableIterator<[Entity, T1, T2, T3]> {
         this.lazyRefresh();
         const pool = this.componentPool;
-        temporaryList.length = 0;
         for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp1.ctype) as T1;
             const c2 = pool.getComponent(entity, comp2.ctype) as T2;
@@ -221,7 +218,6 @@ export class Query implements IQuery, IQueryResult, IQueryEvent {
     public *iterate4<T1 extends Component, T2 extends Component, T3 extends Component, T4 extends Component>(comp1: ComponentType<T1>, comp2: ComponentType<T2>, comp3: ComponentType<T3>, comp4: ComponentType<T4>): IterableIterator<[Entity, T1, T2, T3, T4]> {
         this.lazyRefresh();
         const pool = this.componentPool;
-        temporaryList.length = 0;
         for (let entity of this._entitys) {
             const c1 = pool.getComponent(entity, comp1.ctype) as T1;
             const c2 = pool.getComponent(entity, comp2.ctype) as T2;
